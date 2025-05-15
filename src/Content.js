@@ -4,7 +4,7 @@ const Content = () =>{
     const [ items,setItems ] = useState([
         {
             id:1,
-            checked:false,
+            checked:true,
             item: 'one half pound bag of cocoa covered'
         },
         {
@@ -18,21 +18,43 @@ const Content = () =>{
             item: 'Item 3'
         }
     ]);
+
+    const handleCheck = (id) => {
+        const listItems = items.map((item) => item.id === id ? {...item, checked: !item.checked} : item);
+        setItems(listItems);
+        localStorage.setItem('shoppinglist', JSON.stringify(listItems))
+    }
+
+    const handleDelete = (id) => {
+        const listItems = items.filter((item) => item.id !== id)
+        setItems(listItems);
+        localStorage.setItem('shoppinglist', JSON.stringify(listItems))
+    }
     
     return (
             <main> 
+                {items.length ? (
                 <ul>
-                    {items.map((item) => (
-                        <li className="item" key={item.id}>
-                            <input
-                                type="checkbox"
-                                checked={item.checked}
-                            />
-                            <label htmlFor="">{ item.item }</label>
-                            <button>Delete</button>
-                        </li>
-                    ))}
-                </ul>
+                        {items.map((item) => (
+                            <li className="item" key={item.id}>
+                                <input
+                                    type="checkbox"
+                                    onChange={ () => handleCheck(item.id)}
+                                    checked={item.checked}
+                                />
+                                <label
+                                    style={item.checked ? {textDecoration: 'line-through'} : {}}
+                                    onDoubleClick={ () => handleCheck(item.id) }
+                                >{ item.item }</label>
+                                <button
+                                    onClick={()=> handleDelete(item.id) }
+                                ><i className="fa fa-trash"></i></button>
+                            </li>
+                        ))}
+                    </ul>
+                ): (
+                    <p style={{marginTop: '2rem'}}>Your list is empty</p>
+                )}
             </main>
     )
 }
